@@ -1,3 +1,4 @@
+import { ErrorWithStatus } from './../models/Errors'
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { RegisterReqBody } from '~/models/requests/User.requests'
