@@ -1,3 +1,4 @@
+import { USERS_MESSAGES } from '~/constants/messages'
 import User from '~/models/schemas/User.schema'
 import databaseService from './database.services'
 import { RegisterReqBody } from '~/models/requests/User.requests'
@@ -66,6 +67,12 @@ class UsersService {
     return {
       access_token,
       refresh_token
+    }
+  }
+  async logout(refresh_token: string) {
+    await databaseService.refreshTokens.deleteOne({ token: refresh_token })
+    return {
+      message: USERS_MESSAGES.LOGOUT_SUCCESS
     }
   }
   async checkEmailExists(email: string) {
