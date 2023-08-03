@@ -1,5 +1,11 @@
-import { RefreshTokenValidator, accessTokenValidator } from '~/middlewares/users.middlewares'
-import { loginController, logoutController, registerController } from '~/controllers/users.controllers'
+import { emailVerifyTokenValidator } from './../middlewares/users.middlewares'
+import { refreshTokenValidator, accessTokenValidator } from '~/middlewares/users.middlewares'
+import {
+  emailVerifyController,
+  loginController,
+  logoutController,
+  registerController
+} from '~/controllers/users.controllers'
 import { Router } from 'express'
 import { loginValidator, registerValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -29,5 +35,14 @@ usersRouter.post('/register', registerValidator, wrapRequestHandler(registerCont
  * Body: {refresh_token: string}
  */
 
-usersRouter.post('/logout', accessTokenValidator, RefreshTokenValidator, wrapRequestHandler(logoutController))
+usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestHandler(logoutController))
+/**
+ * Description. Verify email when user click on the link in email
+ *  Path: /verify-email
+ * Method: POST
+
+ * Body: {email_verify_token: string}
+ */
+
+usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(emailVerifyController))
 export default usersRouter
