@@ -1,10 +1,11 @@
 import { emailVerifyTokenValidator } from './../middlewares/users.middlewares'
 import { refreshTokenValidator, accessTokenValidator } from '~/middlewares/users.middlewares'
 import {
-  emailVerifyController,
+  verifyEmailController,
   loginController,
   logoutController,
-  registerController
+  registerController,
+  resendverifyEmailController
 } from '~/controllers/users.controllers'
 import { Router } from 'express'
 import { loginValidator, registerValidator } from '~/middlewares/users.middlewares'
@@ -44,5 +45,14 @@ usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapReq
  * Body: {email_verify_token: string}
  */
 
-usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(emailVerifyController))
+usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(verifyEmailController))
+/**
+ * Description. Resend Verify email when user click on the link in resend email
+ *  Path: /resend-verify-email
+ * Method: POST
+ * Header : {Authorization: Bearer <access_token>}
+ * Body: {}
+ */
+
+usersRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandler(resendverifyEmailController))
 export default usersRouter
