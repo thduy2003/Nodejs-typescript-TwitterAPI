@@ -1,4 +1,9 @@
-import { LoginReqBody, TokenPayload, VerifyEmailReqBody } from './../models/requests/User.requests'
+import {
+  ForgotPasswordReqBody,
+  LoginReqBody,
+  TokenPayload,
+  VerifyEmailReqBody
+} from './../models/requests/User.requests'
 import { ErrorWithStatus } from './../models/Errors'
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
@@ -70,5 +75,13 @@ export const resendverifyEmailController = async (req: Request, res: Response) =
     })
   }
   const result = await usersService.resendEmailVerify(user_id)
+  return res.json(result)
+}
+export const forgotPasswordController = async (
+  req: Request<ParamsDictionary, any, ForgotPasswordReqBody>,
+  res: Response
+) => {
+  const { _id } = req.user as User
+  const result = await usersService.forgotPassword((_id as ObjectId).toString())
   return res.json(result)
 }
