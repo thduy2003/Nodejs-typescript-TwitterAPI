@@ -1,5 +1,7 @@
 import {
+  FollowReqBody,
   ForgotPasswordReqBody,
+  GetProfileReqParams,
   LoginReqBody,
   ResetPasswordReqBody,
   TokenPayload,
@@ -8,7 +10,7 @@ import {
   VerifyForgotPasswordReqBody
 } from './../models/requests/User.requests'
 import { ErrorWithStatus } from './../models/Errors'
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { ObjectId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
@@ -121,4 +123,18 @@ export const updateMeController = async (req: Request<ParamsDictionary, any, Upd
     message: USERS_MESSAGES.UPDATE_ME_SUCCESS,
     result: user
   })
+}
+export const getProfileController = async (req: Request<GetProfileReqParams>, res: Response, next: NextFunction) => {
+  const { username } = req.params
+  const user = await usersService.getProfile(username)
+  return res.json({
+    message: USERS_MESSAGES.GET_PROFILE_SUCCESS,
+    result: user
+  })
+}
+export const followController = async (req: Request<ParamsDictionary, any, FollowReqBody>, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { followed_user_id } = req.body
+  const result = await usersService.follow(user_id, followed_user_id)
+  return res.json(result)
 }
