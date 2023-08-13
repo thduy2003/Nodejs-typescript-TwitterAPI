@@ -15,6 +15,9 @@ export interface UpdateMeReqBody {
 export interface GetProfileReqParams extends ParamsDictionary {
   username: string
 }
+export interface UnFollowReqParams extends ParamsDictionary {
+  user_id: string
+}
 export interface FollowReqBody {
   followed_user_id: string
 }
