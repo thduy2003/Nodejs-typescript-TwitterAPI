@@ -1,5 +1,6 @@
 import { GetProfileReqParams, UpdateMeReqBody } from './../models/requests/User.requests'
 import {
+  changePasswordController,
   followController,
   forgotPasswordController,
   getMeController,
@@ -10,6 +11,7 @@ import {
   verifyForgotPasswordController
 } from './../controllers/users.controllers'
 import {
+  changePasswordValidator,
   emailVerifyTokenValidator,
   followValidator,
   forgotPasswordValidator,
@@ -174,5 +176,20 @@ usersRouter.delete(
   verifiedUserValidator,
   unfollowValidator,
   wrapRequestHandler(unfollowController)
+)
+/**
+ * Description. Change password
+ *  Path: /change-password
+ * Method: PUT
+ * Header : {Authorization: Bearer <access_token>}
+ * Body: {old_password: string, password: string, confirm_password: string}
+ */
+
+usersRouter.put(
+  '/change-password',
+  accessTokenValidator,
+  verifiedUserValidator,
+  changePasswordValidator,
+  wrapRequestHandler(changePasswordController)
 )
 export default usersRouter
