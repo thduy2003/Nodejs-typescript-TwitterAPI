@@ -30,7 +30,7 @@ export interface RegisterReqBody {
   name: string
   email: string
   password: string
-  body: string
+  confirm_password: string
   date_of_birth: string
 }
 export interface LoginReqBody {

@@ -4,7 +4,7 @@ import databaseService from './services/database.services'
 import User from './models/schemas/User.schema'
 import { defaultErrorHandler } from './middlewares/error.middlewares'
 const app = express()
-const port = 3000
+const port = 4000
 app.use(express.json())
 //connect to database
 databaseService.connect()

@@ -5,6 +5,7 @@ import {
   forgotPasswordController,
   getMeController,
   getProfileController,
+  oauthController,
   resetPasswordController,
   unfollowController,
   updateMeController,
@@ -43,6 +44,13 @@ const usersRouter = Router()
  * Body: { email: string, password: string}
  */
 usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
+/**
+ * Description. OAuth with Google
+ *  Path: /oauth/google
+ * Method: GET
+ * Query: { code: string}
+ */
+usersRouter.get('/oauth/google', wrapRequestHandler(oauthController))
 /**
  * Description. Register a new user
  *  Path: /register
