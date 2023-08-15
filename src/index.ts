@@ -6,7 +6,7 @@ import User from './models/schemas/User.schema'
 import { defaultErrorHandler } from './middlewares/error.middlewares'
 import mediasRouter from './routes/medias.routes'
 import { config } from 'dotenv'
-import { UPLOAD_DIR } from './constants/dir'
+import { UPLOAD_IMAGE_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 config()
 const app = express()
@@ -19,7 +19,7 @@ databaseService.connect()
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
 app.use('/static', staticRouter)
-// app.use('/static', express.static(UPLOAD_DIR))
+// app.use('/static', express.static(UPLOAD_IMAGE_DIR))
 app.use(defaultErrorHandler)
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
