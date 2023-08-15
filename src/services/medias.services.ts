@@ -16,8 +16,8 @@ class MediasService {
     //sau khi xử lý xong xóa các ảnh ở file temp đi
     fs.unlinkSync(file.filepath)
     return isProduction
-      ? `${process.env.HOST}/static/${newName}.jpg`
-      : `http://localhost:${process.env.PORT}/static/${newName}.jpg`
+      ? `${process.env.HOST}/static/image/${newName}.jpg`
+      : `http://localhost:${process.env.PORT}/static/image/${newName}.jpg`
   }
 }
 const mediasService = new MediasService()
