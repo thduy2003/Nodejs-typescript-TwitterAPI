@@ -5,8 +5,10 @@ import databaseService from './services/database.services'
 import User from './models/schemas/User.schema'
 import { defaultErrorHandler } from './middlewares/error.middlewares'
 import mediasRouter from './routes/medias.routes'
+import { config } from 'dotenv'
+config()
 const app = express()
-const port = 4000
+const port = process.env.PORT || 4000
 //tạo folder upload
 initFolder()
 app.use(express.json())
