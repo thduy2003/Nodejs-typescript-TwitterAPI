@@ -6,6 +6,7 @@ import {
   getMeController,
   getProfileController,
   oauthController,
+  refreshTokenController,
   resetPasswordController,
   unfollowController,
   updateMeController,
@@ -68,6 +69,14 @@ usersRouter.post('/register', registerValidator, wrapRequestHandler(registerCont
  */
 
 usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestHandler(logoutController))
+/**
+ * Description. Refresh token
+ *  Path: /refresh-token
+ * Method: POST
+ * Body: {refresh_token: string}
+ */
+
+usersRouter.post('/refresh-token', refreshTokenValidator, wrapRequestHandler(refreshTokenController))
 /**
  * Description. Verify email when user click on the link in email
  *  Path: /verify-email
