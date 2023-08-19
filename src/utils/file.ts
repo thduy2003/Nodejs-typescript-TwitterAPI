@@ -1,7 +1,9 @@
 import { Request } from 'express'
 import { File } from 'formidable'
+
 import fs from 'fs'
 import path from 'path'
+import { v4 as uuidv4 } from 'uuid'
 import { UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_DIR, UPLOAD_VIDEO_TEMP_DIR } from '~/constants/dir'
 export const initFolder = () => {
   ;[UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_TEMP_DIR].forEach((dir) => {
@@ -14,6 +16,7 @@ export const initFolder = () => {
 }
 export const handleUploadImage = async (req: Request) => {
   const formidable = (await import('formidable')).default
+
   //đầu tiên lưu ảnh vào file tạm qua services xử lý ảnh rồi lưu vào uploads thật
   const form = formidable({
     uploadDir: UPLOAD_IMAGE_TEMP_DIR,
@@ -44,9 +47,12 @@ export const handleUploadImage = async (req: Request) => {
 }
 export const handleUploadVideo = async (req: Request) => {
   const formidable = (await import('formidable')).default
+  const idName = uuidv4()
+  const folderPath = path.resolve(UPLOAD_VIDEO_DIR, idName)
 
+  fs.mkdirSync(folderPath)
   const form = formidable({
-    uploadDir: UPLOAD_VIDEO_DIR,
+    uploadDir: path.resolve(folderPath),
 
     maxFiles: 1,
     maxFileSize: 52 * 1024 * 1024,
@@ -57,6 +63,9 @@ export const handleUploadVideo = async (req: Request) => {
         form.emit('error' as any, new Error('File type is not valid') as any)
       }
       return valid
+    },
+    filename: function (filename) {
+      return idName
     }
   })
   return new Promise<File[]>((resolve, reject) => {
@@ -75,6 +84,7 @@ export const handleUploadVideo = async (req: Request) => {
         const ext = getExtension(video.originalFilename as string)
         fs.renameSync(video.filepath, video.filepath + '.' + ext)
         video.newFilename = video.newFilename + '.' + ext
+        video.filepath = video.filepath + '.' + ext
       })
       resolve(files.video as File[])
     })
