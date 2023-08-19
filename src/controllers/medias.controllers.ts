@@ -28,6 +28,15 @@ export const uploadVideoHLSController = async (req: Request, res: Response, next
     result: url
   })
 }
+
+export const videoStatusController = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params
+  const data = await mediasService.getVideoStatus(id as string)
+  return res.json({
+    mesage: USERS_MESSAGES.GET_VIDEO_STATUS_SUCCESS,
+    result: data
+  })
+}
 export const serveImageController = (req: Request, res: Response, next: NextFunction) => {
   const { name } = req.params
   return res.sendFile(path.resolve(UPLOAD_IMAGE_DIR, name), (err) => {
@@ -36,6 +45,7 @@ export const serveImageController = (req: Request, res: Response, next: NextFunc
     }
   })
 }
+
 export const serveM3u8Controller = (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params
 
@@ -53,6 +63,7 @@ export const serveSegmentController = (req: Request, res: Response, next: NextFu
     }
   })
 }
+
 export const serveVideoStreamController = (req: Request, res: Response, next: NextFunction) => {
   const range = req.headers.range
   if (!range) {
