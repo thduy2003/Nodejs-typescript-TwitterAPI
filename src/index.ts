@@ -19,6 +19,9 @@ app.use(express.json())
 //connect to database
 databaseService.connect().then(() => {
   databaseService.indexUsers()
+  databaseService.indexRefreshTokens()
+  databaseService.indexVideoStatus()
+  databaseService.indexFollowers()
 })
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
