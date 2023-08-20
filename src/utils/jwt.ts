@@ -22,9 +22,9 @@ export const signToken = ({
     })
   })
 }
-export const verifyToken = ({ token, publicOrPrivateKey }: { token: string; publicOrPrivateKey: string }) => {
+export const verifyToken = ({ token, secretOrPublicKey }: { token: string; secretOrPublicKey: string }) => {
   return new Promise<TokenPayload>((resolve, reject) => {
-    jwt.verify(token, publicOrPrivateKey, (error, decoded) => {
+    jwt.verify(token, secretOrPublicKey, (error, decoded) => {
       if (error) {
         throw reject(error)
       }
