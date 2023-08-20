@@ -17,7 +17,9 @@ const port = process.env.PORT || 4000
 initFolder()
 app.use(express.json())
 //connect to database
-databaseService.connect()
+databaseService.connect().then(() => {
+  databaseService.indexUsers()
+})
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
 app.use('/static', staticRouter)

@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb'
 import { UserVerifyStatus } from '~/constants/enums'
-
+import { v4 } from 'uuid'
 interface UserType {
   _id?: ObjectId
   name: string
@@ -51,7 +51,7 @@ export default class User {
     this.bio = user.bio || ''
     this.location = user.location || ''
     this.website = user.website || ''
-    this.username = user.username || ''
+    this.username = user.username || `user${v4().replace(/-/g, '')}`
     this.avatar = user.avatar || ''
     this.cover_photo = user.cover_photo || ''
   }
