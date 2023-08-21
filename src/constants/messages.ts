@@ -66,3 +66,14 @@ export const USERS_MESSAGES = {
   REFRESH_TOKEN_SUCCESS: 'Refresh token success',
   GET_VIDEO_STATUS_SUCCESS: 'get video status success'
 } as const
+export const TWEETS_MESSAGES = {
+  INVALID_TYPE: 'Invalid type',
+  INVALID_AUDIENCE: 'Invalid audience',
+  PARENT_ID_MUST_BE_A_VALID_TWEET_ID: 'parent id must be a valid tweet id',
+  PARENT_ID_MUST_BE_NULL: 'parent id must be null',
+  CONTENT_MUST_BE_A_NON_EMPTY_STRING: 'content must be a non empty string',
+  CONTENT_MUST_BE_EMPTY_STRING: 'content must be empty string',
+  HASHTAGS_MUST_BE_AN_ARRAY_OF_STRING: 'hashtags must be an array of string',
+  MENTIONS_MUST_BE_AN_ARRAY_OF_USER_ID: 'mentions must be an array of user id',
+  MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT: 'media must be an array of media object'
+} as const
