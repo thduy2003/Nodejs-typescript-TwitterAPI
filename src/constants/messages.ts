@@ -75,5 +75,6 @@ export const TWEETS_MESSAGES = {
   CONTENT_MUST_BE_EMPTY_STRING: 'content must be empty string',
   HASHTAGS_MUST_BE_AN_ARRAY_OF_STRING: 'hashtags must be an array of string',
   MENTIONS_MUST_BE_AN_ARRAY_OF_USER_ID: 'mentions must be an array of user id',
-  MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT: 'media must be an array of media object'
+  MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT: 'media must be an array of media object',
+  CREATE_TWEET_SUCCESS: 'create tweet successfully'
 } as const
