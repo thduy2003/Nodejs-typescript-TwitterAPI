@@ -1,3 +1,4 @@
+import { NextFunction } from 'express'
 import { ErrorWithStatus } from './../models/Errors'
 import { checkSchema } from 'express-validator'
 import { isEmpty } from 'lodash'
