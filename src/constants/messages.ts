@@ -81,5 +81,6 @@ export const TWEETS_MESSAGES = {
   UNBOOKMARK_TWEET_SUCCECSS: 'unbookmark tweet successfully',
   INVALID_TWEET_ID: 'invalid tweet id',
   TWEET_NOT_FOUND: 'tweet not found',
-  GET_DETAIL_TWEET: 'get detail tweet'
+  GET_DETAIL_TWEET: 'get detail tweet',
+  TWEET_IS_NOT_PUBLIC: 'tweet is not public'
 } as const

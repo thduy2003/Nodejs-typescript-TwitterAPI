@@ -553,6 +553,7 @@ export const changePasswordValidator = validate(
 )
 export const isUserLoggedInValidator = (middleware: (req: Request, res: Response, next: NextFunction) => void) => {
   return (req: Request, res: Response, next: NextFunction) => {
+    // nếu người dùng có login thì kiểm tra còn không thì thôi
     if (req.headers.authorization) {
       return middleware(req, res, next)
     }
