@@ -37,6 +37,31 @@ class TweetsService {
 
     return tweet
   }
+  async increaseView(tweet_id: string, user_id?: string) {
+    const inc = user_id ? { user_views: 1 } : { guest_views: 1 }
+    const result = await databaseService.tweets.findOneAndUpdate(
+      {
+        _id: new ObjectId(tweet_id)
+      },
+      {
+        $inc: inc
+      },
+      {
+        returnDocument: 'after',
+        projection: {
+          guest_views: 1,
+          user_views: 1
+        }
+      }
+    )
+    // vì đến bước này thì nó đã trải qua mấy bước validator rồi nên chắc chắn sẽ có dữ liệu trả về nên.value và ép kiểu luôn
+    //nhưng mà mình chỉ trả về _id và guest_views và user_views thôi
+    return result.value as WithId<{
+      user_views: number
+      guest_views: number
+    }>
+  }
 }
+
 const tweetsService = new TweetsService()
 export default tweetsService
