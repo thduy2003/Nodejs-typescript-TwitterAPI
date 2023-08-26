@@ -51,7 +51,8 @@ class TweetsService {
         returnDocument: 'after',
         projection: {
           guest_views: 1,
-          user_views: 1
+          user_views: 1,
+          updated_at: 1
         }
       }
     )
@@ -60,18 +61,21 @@ class TweetsService {
     return result.value as WithId<{
       user_views: number
       guest_views: number
+      updated_at: Date
     }>
   }
   async getTweetChildren({
     tweet_id,
     tweet_type,
     limit,
-    page
+    page,
+    user_id
   }: {
     tweet_id: string
     tweet_type: TweetType
     page: number
     limit: number
+    user_id?: string
   }) {
     const tweets = await databaseService.tweets
       .aggregate<Tweet>([
@@ -177,9 +181,6 @@ class TweetsService {
                   }
                 }
               }
-            },
-            views: {
-              $add: ['$user_views', '$guest_views']
             }
           }
         },
@@ -196,9 +197,39 @@ class TweetsService {
         }
       ])
       .toArray()
-    const total = await databaseService.tweets.countDocuments({
-      parent_id: new ObjectId(tweet_id),
-      type: tweet_type
+
+    // ở đây mình ép kiểu là ObjectId luôn vì mình biết chắc rằng do nó lấy từ document tweets ra
+    const ids = tweets.map((tweet) => tweet._id as ObjectId)
+    const inc = user_id ? { user_views: 1 } : { guest_views: 1 }
+    const date = new Date()
+    // bởi vì thằng updateMany này không return về giá trị nên mình lấy ra biến date để có thể sử dụng lại
+    const [, total] = await Promise.all([
+      databaseService.tweets.updateMany(
+        {
+          _id: {
+            $in: ids
+          }
+        },
+        {
+          $inc: inc,
+          $set: {
+            updated_at: date
+          }
+        }
+      ),
+      databaseService.tweets.countDocuments({
+        parent_id: new ObjectId(tweet_id),
+        type: tweet_type
+      })
+    ])
+    // bởi vì thằng updateMany đó nó không return về giá trị nên chúng ta cần forEach ở đây tinh chỉnh lại giá trị view và ngày cập nhật trả về cho client
+    tweets.forEach((tweet) => {
+      tweet.updated_at = date
+      if (user_id) {
+        tweet.user_views += 1
+      } else {
+        tweet.guest_views += 1
+      }
     })
     return {
       tweets,
