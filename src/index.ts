@@ -11,6 +11,7 @@ import staticRouter from './routes/static.routes'
 import cors from 'cors'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
+
 // import './utils/fake'
 config()
 const app = express()
