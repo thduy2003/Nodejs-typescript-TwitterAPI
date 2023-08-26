@@ -1,5 +1,5 @@
 import { TWEETS_MESSAGES } from '~/constants/messages'
-import { TweetRequestBody } from '~/models/requests/Tweet.requests'
+import { TweetParam, TweetQuery, TweetRequestBody } from '~/models/requests/Tweet.requests'
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { TokenPayload } from '~/models/requests/User.requests'
@@ -28,7 +28,7 @@ export const getTweetController = async (req: Request, res: Response) => {
     result: tweet
   })
 }
-export const getTweetChildrenController = async (req: Request, res: Response) => {
+export const getTweetChildrenController = async (req: Request<TweetParam, any, any, TweetQuery>, res: Response) => {
   const limit = Number(req.query.limit as string)
   const page = Number(req.query.page as string)
   const tweet_type = Number(req.query.tweet_type as string) as TweetType
