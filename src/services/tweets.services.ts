@@ -468,6 +468,7 @@ class TweetsService {
         ])
         .toArray()
     ])
+    //lấy ra mảng từng id của các tweet để cập nhật lại view
     const tweet_ids = tweets.map((tweet) => tweet._id as ObjectId)
     const date = new Date()
     await databaseService.tweets.updateMany(
