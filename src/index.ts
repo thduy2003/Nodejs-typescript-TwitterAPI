@@ -27,6 +27,7 @@ databaseService.connect().then(() => {
   databaseService.indexRefreshTokens()
   databaseService.indexVideoStatus()
   databaseService.indexFollowers()
+  databaseService.indexTweets()
 })
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
