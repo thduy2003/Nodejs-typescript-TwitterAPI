@@ -9,7 +9,8 @@ export const searchController = async (req: Request<ParamsDictionary, any, any, 
   const content = req.query.content
   const user_id = req.decoded_authorization?.user_id as string
   const media_type = req.query.media_type
-  const result = await searchService.search({ limit, page, content, user_id, media_type })
+  const people_follow = req.query.people_follow
+  const result = await searchService.search({ limit, page, content, user_id, media_type, people_follow })
 
   res.json({
     message: 'search successful',

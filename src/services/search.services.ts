@@ -8,13 +8,15 @@ class SearchService {
     page,
     content,
     user_id,
-    media_type
+    media_type,
+    people_follow
   }: {
     limit: number
     page: number
     content: string
     user_id: string
-    media_type: MediaTypeQuery
+    media_type?: MediaTypeQuery
+    people_follow?: string
   }) {
     const $match: any = {
       $text: {
@@ -31,8 +33,30 @@ class SearchService {
         }
       }
     }
+    if (people_follow && people_follow === '1') {
+      const user_id_obj = new ObjectId(user_id)
+      const followed_user_ids = await databaseService.followers
+        .find(
+          {
+            user_id: user_id_obj
+          },
+          {
+            projection: {
+              followed_user_id: 1,
+              _id: 0
+            }
+          }
+        )
+        .toArray()
+      // chỉ lấy ra mảng gồm các followed_user_ids
+      const ids = followed_user_ids.map((item) => item.followed_user_id)
+      // Mong muốn lấy ra thêm các bài tweet của mình nữa
+      ids.push(user_id_obj)
+      $match['user_id'] = {
+        $in: ids
+      }
+    }
     console.log($match)
-
     const [tweets, total] = await Promise.all([
       databaseService.tweets
         .aggregate([
@@ -260,7 +284,7 @@ class SearchService {
     })
     return {
       tweets,
-      total: total ? total[0]?.total : 0
+      total: total[0]?.total || 0
     }
   }
 }
