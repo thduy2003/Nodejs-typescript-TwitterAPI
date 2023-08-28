@@ -63,5 +63,13 @@ export const sendVerifyEmail = (toAddress: string, subject: string, body: string
 
   return sesClient.send(sendEmailCommand)
 }
+export const sendForgotPasswordEmail = (toAddress: string, subject: string, body: string) => {
+  const sendEmailCommand = createSendEmailCommand({
+    fromAddress: process.env.SES_FROM_ADDRESS as string,
+    toAddresses: toAddress,
+    body,
+    subject
+  })
 
-sendVerifyEmail('duyaccphu2003@gmail.com', 'Tiêu đề email', '<h1>Nội dung email</h1>')
+  return sesClient.send(sendEmailCommand)
+}

@@ -12,7 +12,7 @@ import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import Follower from '~/models/schemas/Follower.schema'
 import axios from 'axios'
-import { sendVerifyEmail } from '~/utils/email'
+import { sendForgotPasswordEmail, sendVerifyEmail } from '~/utils/email'
 config()
 class UsersService {
   private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
@@ -123,7 +123,7 @@ class UsersService {
     <p>Click <a href="${process.env.CLIENT_URL}/verify-email?token=${email_verify_token}">here</a> to verify your email</p>
     `
     )
-    console.log('email_verify_token: ', email_verify_token)
+
     const { iat, exp } = await this.decodeRefreshToken(refresh_token)
     await databaseService.refreshTokens.insertOne(
       new RefreshToken({
@@ -310,10 +310,16 @@ class UsersService {
       refresh_token
     }
   }
-  async resendEmailVerify(user_id: string) {
+  async resendEmailVerify(user_id: string, email: string) {
     const email_verify_token = await this.signEmailVerifyToken({ user_id, verify: UserVerifyStatus.Unverified })
-    //Giả bộ gửi email vì chưa làm chức năng này
-    console.log('Resend verify email', email_verify_token)
+    await sendVerifyEmail(
+      email,
+      'Resend Verify email',
+      `
+    <h1>Verify your email</h1>\
+    <p>Click <a href="${process.env.CLIENT_URL}/resend-verify-email?token=${email_verify_token}">here</a> to resend verify your email</p>
+    `
+    )
     await databaseService.users.updateOne(
       {
         _id: new ObjectId(user_id)
@@ -331,10 +337,16 @@ class UsersService {
       message: USERS_MESSAGES.RESEND_VERIFY_EMAIL_SUCCESS
     }
   }
-  async forgotPassword({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  async forgotPassword({ user_id, verify, email }: { user_id: string; verify: UserVerifyStatus; email: string }) {
     const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify })
-    //Giả bộ gửi email vì chưa làm chức năng này
-    console.log('forgot_password_token', forgot_password_token)
+    await sendForgotPasswordEmail(
+      email,
+      'Forgot Password',
+      `
+    <h1>Forgot password</h1>\
+    <p>Click <a href="${process.env.CLIENT_URL}/forgot-password?token=${forgot_password_token}">here</a> to forgot password</p>
+    `
+    )
     await databaseService.users.updateOne(
       {
         _id: new ObjectId(user_id)
