@@ -25,15 +25,38 @@ const io = new Server(httpServer, {
     origin: 'http://localhost:3000'
   }
 })
+//object lưu thông tin người dùng gồm key là _id của user và value socket_id của người đó
+const users: {
+  [key: string]: {
+    socket_id: string
+  }
+} = {}
 //instance socket
 io.on('connection', (socket) => {
   console.log(`user ${socket.id} connected`)
-  socket.emit('emit', {
-    message: `Hello user with id ${socket.id}`
+  //bên client gửi socket.auth = 1 object chứa key là _id nên dùng như này để lấy ra _id của user đó
+  const user_id = socket.handshake.auth._id
+  //lưu vào object users
+  users[user_id] = {
+    socket_id: socket.id
+  }
+  console.log(users)
+  //ví dụ có 2 thằng vào thì nó sẽ gọi 2 lần socket  nha tạm gọi là socket 1 và socket 2
+  // thì thằng 1 emit với private message thì thằng socket1 mới nhận được nah, còn socket2 nó lắng nghe như này ko nhận đc
+
+  socket.on('private message', (data) => {
+    //lấy ra socket id của người nhận, sau đó emit lại private message và to đến socket_id của người nhận thì nó sẽ gửi đến người nhận
+    const receiver_socket_id = users[data.to].socket_id
+    socket.to(receiver_socket_id).emit('receive private message', {
+      content: data.content,
+      from: user_id //vd người 1 gửi message thì đoạn này nhận được user_id của người 1 nha
+    })
   })
-  socket.on('hello', (data) => console.log(data))
   socket.on('disconnect', () => {
+    //khi disconnect thì phải xóa nó ra nha
+    delete users[user_id]
     console.log(`user ${socket.id} disconnected`)
+    console.log(users)
   })
 })
 app.use(cors())
