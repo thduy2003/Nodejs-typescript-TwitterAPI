@@ -112,8 +112,9 @@ class MediasService {
         //chuyển qua jpeg để giảm kích thước ảnh
         await sharp(file.filepath).jpeg().toFile(newPath)
         //upload ảnh lên s3
+        //thêm cái đầu images như vậy để trên s3 tạo thêm folder chứa nó
         const s3Result = await uploadFileToS3({
-          filename: newName,
+          filename: 'images/' + newName,
           filepath: newPath,
           contentType: mime.getType(newPath) as string
         })
@@ -135,14 +136,27 @@ class MediasService {
   }
   async uploadVideo(req: Request) {
     const files = await handleUploadVideo(req)
-    const result: Media[] = files.map((file) => {
-      return {
-        url: isProduction
-          ? `${process.env.HOST}/static/video/${file.newFilename}`
-          : `http://localhost:${process.env.PORT}/static/video/${file.newFilename}`,
-        type: MediaType.Video
-      }
-    })
+    const result: Media[] = await Promise.all(
+      files.map(async (file) => {
+        const s3Result = await uploadFileToS3({
+          filename: 'videos/' + file.newFilename,
+          filepath: file.filepath,
+          contentType: mime.getType(file.filepath) as string
+        })
+        //upload xong xóa trong server
+        fsPromise.unlink(file.filepath)
+        return {
+          url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
+          type: MediaType.Video
+        }
+        // return {
+        //   url: isProduction
+        //     ? `${process.env.HOST}/static/video/${file.newFilename}`
+        //     : `http://localhost:${process.env.PORT}/static/video/${file.newFilename}`,
+        //   type: MediaType.Video
+        // }
+      })
+    )
     return result
   }
   async uploadVideoHLS(req: Request) {
