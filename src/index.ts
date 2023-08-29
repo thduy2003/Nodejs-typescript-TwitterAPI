@@ -12,12 +12,29 @@ import cors from 'cors'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import searchRouter from './routes/search.routes'
+import { createServer } from 'http'
+import { Server } from 'socket.io'
 // import './utils/s3'
 // import './utils/fake'
 config()
 const app = express()
+const httpServer = createServer(app)
+//instance io
+const io = new Server(httpServer, {
+  cors: {
+    origin: 'http://localhost:3000'
+  }
+})
+//instance socket
+io.on('connection', (socket) => {
+  console.log(`user ${socket.id} connected`)
+  socket.on('disconnect', () => {
+    console.log(`user ${socket.id} disconnected`)
+  })
+})
 app.use(cors())
 const port = process.env.PORT || 4000
+
 //tạo folder upload
 initFolder()
 app.use(express.json())
@@ -37,6 +54,6 @@ app.use('/search', searchRouter)
 app.use('/static', staticRouter)
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 app.use(defaultErrorHandler)
-app.listen(port, () => {
+httpServer.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
