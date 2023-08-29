@@ -1,10 +1,11 @@
+import { UPLOAD_VIDEO_DIR } from './../constants/dir'
 import { Request } from 'express'
 import path from 'path'
 import sharp from 'sharp'
 import { UPLOAD_IMAGE_DIR } from '~/constants/dir'
 import fs from 'fs'
 import fsPromise from 'fs/promises'
-import { getNameFromFullName, handleUploadImage, handleUploadVideo } from '~/utils/file'
+import { getFiles, getNameFromFullName, handleUploadImage, handleUploadVideo } from '~/utils/file'
 import { isProduction } from '~/constants/config'
 import { config } from 'dotenv'
 import { EncodingStatus, MediaType } from '~/constants/enums'
@@ -15,6 +16,7 @@ import VideoStatus from '~/models/schemas/VideoStatus.schema'
 import { uploadFileToS3 } from '~/utils/s3'
 import mime from 'mime'
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3'
+import { rimrafSync } from 'rimraf'
 config()
 class Queue {
   items: string[]
@@ -56,8 +58,25 @@ class Queue {
       )
       try {
         await encodeHLSWithMultipleVideoStreams(videoPath)
+        //encode xong thì xóa trong hàng đợi
         this.items.shift()
-        await fsPromise.unlink(videoPath)
+
+        //dẫn đến folder id trong videos
+        const files = getFiles(path.resolve(UPLOAD_VIDEO_DIR, idName))
+        await Promise.all(
+          files.map((filepath) => {
+            //filename nso sẽ lấy ra videos-hls/0b2775b1-4210-4684-8a68-b6897d4df5ac/v0/fileSquence0.ts
+            // substring 1 là để xóa cái dấu \ còn tồn tại khi filepath.replace nó chỉ replace đến cái folder videos thôi
+            const filename = 'videos-hls/' + filepath.replace(path.resolve(UPLOAD_VIDEO_DIR), '').substring(1)
+            return uploadFileToS3({
+              filepath,
+              filename,
+              contentType: mime.getType(filepath) as string
+            })
+          })
+        )
+        //xóa các folder trong server
+        rimrafSync(path.resolve(UPLOAD_VIDEO_DIR, idName))
         await databaseService.videoStatus.updateOne(
           {
             name: idName
@@ -169,8 +188,8 @@ class MediasService {
 
         return {
           url: isProduction
-            ? `${process.env.HOST}/static/video-hls/${newName}.m3u8`
-            : `http://localhost:${process.env.PORT}/static/video-hls/${newName}.m3u8`,
+            ? `${process.env.HOST}/static/video-hls/${newName}/master.m3u8`
+            : `http://localhost:${process.env.PORT}/static/video-hls/${newName}/master.m3u8`,
           type: MediaType.HLS
         }
       })
