@@ -28,6 +28,10 @@ const io = new Server(httpServer, {
 //instance socket
 io.on('connection', (socket) => {
   console.log(`user ${socket.id} connected`)
+  socket.emit('emit', {
+    message: `Hello user with id ${socket.id}`
+  })
+  socket.on('hello', (data) => console.log(data))
   socket.on('disconnect', () => {
     console.log(`user ${socket.id} disconnected`)
   })
