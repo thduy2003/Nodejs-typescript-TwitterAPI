@@ -23,6 +23,7 @@ import { UserVerifyStatus } from './constants/enums'
 import { USERS_MESSAGES } from './constants/messages'
 import HTTP_STATUS from './constants/httpStatus'
 import { ErrorWithStatus } from './models/Errors'
+import { SocketAddress } from 'net'
 // import './utils/s3'
 // import './utils/fake'
 config()
@@ -58,6 +59,8 @@ io.use(async (socket, next) => {
     }
     // lấy được decoded_authorization thì mutate lại thằng auth để lấy được user_id dưới hàm connection socket
     socket.handshake.auth.decoded_authorization = decoded_authorization
+    //mutate thêm thằng access_token cho thằng middleware socket ở dưới lấy được lun nha
+    socket.handshake.auth.access_token = access_token
     // nếu đã verified không catch được lỗi nào thì next cho nó chạy xuống connection ở dưới
     next()
   } catch (error) {
@@ -77,7 +80,23 @@ io.on('connection', (socket) => {
   users[user_id] = {
     socket_id: socket.id
   }
-  console.log(users)
+  //middleware cho socket
+  socket.use(async (packet, next) => {
+    const { access_token } = socket.handshake.auth
+    try {
+      await verifyAccessToken(access_token)
+      // không có lỗi thì next để cho nó chạy middleware ở dưới nha
+      next()
+    } catch (error) {
+      next(new Error('Unauthorized'))
+    }
+  })
+  // instance này để cho nhận được cái error nếu middleware trên catch về error
+  socket.on('error', (error) => {
+    if (error.message === 'Unauthorized') {
+      socket.disconnect()
+    }
+  })
   //ví dụ có 2 thằng vào thì nó sẽ gọi 2 lần socket  nha tạm gọi là socket 1 và socket 2
   // thì thằng 1 emit với private message thì thằng socket1 mới nhận được nah, còn socket2 nó lắng nghe như này ko nhận đc
 
