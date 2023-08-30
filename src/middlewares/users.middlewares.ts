@@ -518,6 +518,14 @@ export const unfollowValidator = validate(
     ['params']
   )
 )
+export const getConversationsValidator = validate(
+  checkSchema(
+    {
+      receiver_id: userIdSchema
+    },
+    ['params']
+  )
+)
 export const changePasswordValidator = validate(
   checkSchema(
     {

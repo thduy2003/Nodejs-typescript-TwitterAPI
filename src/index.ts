@@ -47,22 +47,23 @@ io.on('connection', (socket) => {
   //ví dụ có 2 thằng vào thì nó sẽ gọi 2 lần socket  nha tạm gọi là socket 1 và socket 2
   // thì thằng 1 emit với private message thì thằng socket1 mới nhận được nah, còn socket2 nó lắng nghe như này ko nhận đc
 
-  socket.on('private message', async (data) => {
-    //lấy ra socket id của người nhận, sau đó emit lại private message và to đến socket_id của người nhận thì nó sẽ gửi đến người nhận
-    const receiver_socket_id = users[data.to]?.socket_id
+  socket.on('send_message', async (data) => {
+    //lấy ra socket id của người nhận, sau đó emit lại message và to đến socket_id của người nhận thì nó sẽ gửi đến người nhận
+    const { receiver_id, sender_id, content } = data.payload
+    const receiver_socket_id = users[receiver_id]?.socket_id
     //nếu không có socket id của người nhận thì không làm gì
     if (!receiver_socket_id) return
     //lưu vào db đoạn tin nhắn
-    await databaseService.conversations.insertOne(
-      new Conversation({
-        receiver_id: new ObjectId(data.to),
-        sender_id: new ObjectId(data.from),
-        content: data.content
-      })
-    )
-    socket.to(receiver_socket_id).emit('receive private message', {
-      content: data.content,
-      from: user_id //vd người 1 gửi message thì đoạn này nhận được user_id của người 1 nha
+    const conversation = new Conversation({
+      receiver_id: new ObjectId(receiver_id),
+      sender_id: new ObjectId(sender_id),
+      content: content
+    })
+    const result = await databaseService.conversations.insertOne(conversation)
+    //gán _id vô cho conversation
+    conversation._id = result.insertedId
+    socket.to(receiver_socket_id).emit('receive_message', {
+      payload: conversation
     })
   })
   socket.on('disconnect', () => {
