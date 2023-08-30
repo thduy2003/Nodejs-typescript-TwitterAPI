@@ -29,6 +29,7 @@ class ConversationsService {
     // lấy ra các tin nhắn, dùng find thì phải có toArray() và phân trâng kéo đến đâu thì hiện tin nhắn đến đó
     const conversations = await databaseService.conversations
       .find(match)
+      .sort({ created_at: -1 })
       .skip(limit * (page - 1))
       .limit(limit)
       .toArray()
