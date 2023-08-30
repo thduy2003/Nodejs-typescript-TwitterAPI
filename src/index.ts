@@ -15,6 +15,8 @@ import searchRouter from './routes/search.routes'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import Conversation from './models/schemas/Conversation.schema'
+import { ObjectId } from 'mongodb'
+import conversationsRouter from './routes/conversations.routes'
 // import './utils/s3'
 // import './utils/fake'
 config()
@@ -53,8 +55,8 @@ io.on('connection', (socket) => {
     //lưu vào db đoạn tin nhắn
     await databaseService.conversations.insertOne(
       new Conversation({
-        receiver_id: data.to,
-        sender_id: data.from,
+        receiver_id: new ObjectId(data.to),
+        sender_id: new ObjectId(data.from),
         content: data.content
       })
     )
@@ -89,6 +91,7 @@ app.use('/medias', mediasRouter)
 app.use('/tweets', tweetsRouter)
 app.use('/bookmarks', bookmarksRouter)
 app.use('/search', searchRouter)
+app.use('/conversations', conversationsRouter)
 app.use('/static', staticRouter)
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 app.use(defaultErrorHandler)
