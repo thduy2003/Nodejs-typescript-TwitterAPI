@@ -14,6 +14,7 @@ import bookmarksRouter from './routes/bookmarks.routes'
 import searchRouter from './routes/search.routes'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
+import Conversation from './models/schemas/Conversation.schema'
 // import './utils/s3'
 // import './utils/fake'
 config()
@@ -44,9 +45,19 @@ io.on('connection', (socket) => {
   //ví dụ có 2 thằng vào thì nó sẽ gọi 2 lần socket  nha tạm gọi là socket 1 và socket 2
   // thì thằng 1 emit với private message thì thằng socket1 mới nhận được nah, còn socket2 nó lắng nghe như này ko nhận đc
 
-  socket.on('private message', (data) => {
+  socket.on('private message', async (data) => {
     //lấy ra socket id của người nhận, sau đó emit lại private message và to đến socket_id của người nhận thì nó sẽ gửi đến người nhận
-    const receiver_socket_id = users[data.to].socket_id
+    const receiver_socket_id = users[data.to]?.socket_id
+    //nếu không có socket id của người nhận thì không làm gì
+    if (!receiver_socket_id) return
+    //lưu vào db đoạn tin nhắn
+    await databaseService.conversations.insertOne(
+      new Conversation({
+        receiver_id: data.to,
+        sender_id: data.from,
+        content: data.content
+      })
+    )
     socket.to(receiver_socket_id).emit('receive private message', {
       content: data.content,
       from: user_id //vd người 1 gửi message thì đoạn này nhận được user_id của người 1 nha
