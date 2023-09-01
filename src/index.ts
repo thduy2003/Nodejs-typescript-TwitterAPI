@@ -15,7 +15,26 @@ import searchRouter from './routes/search.routes'
 import { createServer } from 'http'
 import conversationsRouter from './routes/conversations.routes'
 import initSocket from './utils/socket'
+import fs from 'fs'
+import YAML from 'yaml'
+import path from 'path'
+import swaggerUi from 'swagger-ui-express'
+import swaggerJsdoc from 'swagger-jsdoc'
+const file = fs.readFileSync(path.resolve('twitter-swagger.yaml'), 'utf8')
+const swaggerDocument = YAML.parse(file)
 
+const options: swaggerJsdoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Twitter API Documentation',
+      version: '1.0.0'
+    }
+  },
+  apis: ['./openapi/*.yaml'] // files containing annotations as above
+}
+
+const openapiSpecification = swaggerJsdoc(options)
 // import './utils/s3'
 // import './utils/fake'
 config()
@@ -36,6 +55,7 @@ databaseService.connect().then(() => {
   databaseService.indexFollowers()
   databaseService.indexTweets()
 })
+
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
 app.use('/tweets', tweetsRouter)
@@ -44,6 +64,8 @@ app.use('/search', searchRouter)
 app.use('/conversations', conversationsRouter)
 app.use('/static', staticRouter)
 app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 app.use(defaultErrorHandler)
 initSocket(httpServer)
 httpServer.listen(port, () => {

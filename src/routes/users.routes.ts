@@ -39,10 +39,123 @@ import { filterMiddleware } from '~/middlewares/common.middlewares'
 
 const usersRouter = Router()
 /**
- * Description. Login a user
- *  Path: /login
- * Method: POST
- * Body: { email: string, password: string}
+ * @openapi
+ * components:
+ *   schemas:
+ *     LoginBody:
+ *       type: object
+ *       properties:
+ *         email:
+ *           type: string
+ *           example: duytrieudong@gmail.com
+ *         password:
+ *           type: string
+ *           example: Duy2308!
+ *
+ *     SucessAuthentication:
+ *       type: object
+ *       properties:
+ *         access_token:
+ *           type: string
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRlYzVmM2JhZjVmZGFmNDQ1ZWY0N2ZhIiwidG9rZW5fdHlwZSI6MCwidmVyaWZ5IjoxLCJpYXQiOjE2OTM1NDA1OTMsImV4cCI6MTY5MzYyNjk5M30.0RHltg8PwzMOYNY4DzXmWyk6IHZV-SXKDo2nCxK_nq0
+ *         refresh_token:
+ *           type: string
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRlYzVmM2JhZjVmZGFmNDQ1ZWY0N2ZhIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE2OTM1NDA1OTMsImV4cCI6MTcwMjE4MDU5M30.ak1Tc-JJKvYTeNWmTVX0_vilYnN9NvFHzjrBKNXm55A
+ *
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           format: MongoId
+ *           example: "64ec5f3baf5fdaf445ef47fa"
+ *         name:
+ *           type: string
+ *           example: "duy"
+ *         email:
+ *           type: string
+ *           example: "duyaccphu2003+1@gmail.com"
+ *         date_of_birth:
+ *           type: string
+ *           format: ISO8601
+ *           example: "2003-08-23T08:26:33.781Z"
+ *         created_at:
+ *           type: string
+ *           format: ISO8601
+ *           example: "2023-08-28T08:47:55.841Z"
+ *         updated_at:
+ *           type: string
+ *           format: ISO8601
+ *           example: "2023-08-28T09:26:31.033Z"
+ *         verify:
+ *           $ref: "#/components/schemas/UserVerifyStatus"
+ *         twitter_circle:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: MongoId
+ *           example: ['64ec5f3baf5fdaf445ef47fa', '64ec5f3baf5fdaf445ef47fa']
+ *         bio:
+ *           type: string
+ *           example: "This is My bio"
+ *         location:
+ *           type: string
+ *           example: "San Francisco, CA"
+ *         website:
+ *           type: string
+ *           example: "www.example.com"
+ *         username:
+ *           type: string
+ *           example: "useraa013e26836344318c926d8c697ba6a7"
+ *         avatar:
+ *           type: string
+ *           example: "http://localhost:4000/images/avatars/avt.jpg"
+ *         cover_photo:
+ *           type: string
+ *           example: "http://localhost:4000/images/avatars/avt.jpg"
+ *
+ *     UserVerifyStatus:
+ *       type: number
+ *       enum: [UnVerified, Verified, Banned]
+ *       example: 1
+ *
+ * securitySchemes:
+ *   BearerAuth:
+ *     type: http
+ *     scheme: bearer
+ *     bearerFormat: JWT
+ */
+/**
+ * @openapi
+ * /users/login:
+ *   post:
+ *     tags:
+ *       - users
+ *     summary: Đăng nhập
+ *     description: Đăng nhập vào hệ thống
+ *     operationId: login
+ *     requestBody:
+ *       description: Thông tin đăng nhập
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/LoginBody"
+ *       required: true
+ *     responses:
+ *       '200':
+ *         description: Đăng nhập thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login success
+ *                 result:
+ *                   $ref: "#/components/schemas/SuccessAuthentication"
+ *       '422':
+ *         description: Invalid input
  */
 usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
 /**
