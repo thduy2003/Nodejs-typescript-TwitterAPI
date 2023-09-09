@@ -5,7 +5,7 @@ import databaseService from './services/database.services'
 import User from './models/schemas/User.schema'
 import { defaultErrorHandler } from './middlewares/error.middlewares'
 import mediasRouter from './routes/medias.routes'
-import { config } from 'dotenv'
+
 import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 import cors from 'cors'
@@ -20,6 +20,7 @@ import YAML from 'yaml'
 import path from 'path'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
+import { envConfig } from './constants/config'
 const file = fs.readFileSync(path.resolve('twitter-swagger.yaml'), 'utf8')
 const swaggerDocument = YAML.parse(file)
 
@@ -37,12 +38,12 @@ const options: swaggerJsdoc.Options = {
 const openapiSpecification = swaggerJsdoc(options)
 // import './utils/s3'
 // import './utils/fake'
-config()
+
 const app = express()
 const httpServer = createServer(app)
 
 app.use(cors())
-const port = process.env.PORT || 4000
+const port = envConfig.port
 
 //tạo folder upload
 initFolder()
