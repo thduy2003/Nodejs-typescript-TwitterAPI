@@ -8,7 +8,7 @@ import mediasRouter from './routes/medias.routes'
 
 import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
-import cors from 'cors'
+import cors, { CorsOptions } from 'cors'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import searchRouter from './routes/search.routes'
@@ -20,7 +20,8 @@ import YAML from 'yaml'
 import path from 'path'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
-import { envConfig } from './constants/config'
+import { envConfig, isProduction } from './constants/config'
+import helmet from 'helmet'
 const file = fs.readFileSync(path.resolve('twitter-swagger.yaml'), 'utf8')
 const swaggerDocument = YAML.parse(file)
 
@@ -41,7 +42,11 @@ const openapiSpecification = swaggerJsdoc(options)
 
 const app = express()
 const httpServer = createServer(app)
-
+app.use(helmet())
+//Kiểm tra nếu là môi trường production thì chỉ cho clientURL đó vô được thôi còn ngược lại thì ai vô cũng được
+const corsOptions: CorsOptions = {
+  origin: isProduction ? envConfig.clientUrl : '*'
+}
 app.use(cors())
 const port = envConfig.port
 
