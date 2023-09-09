@@ -47,7 +47,7 @@ app.use(helmet())
 const corsOptions: CorsOptions = {
   origin: isProduction ? envConfig.clientUrl : '*'
 }
-app.use(cors())
+app.use(cors(corsOptions))
 const port = envConfig.port
 
 //tạo folder upload
