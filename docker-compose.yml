@@ -1,0 +1,8 @@
+version: '3'
+services:
+  twitter:
+    image: tranhoangduy/twitter:v0
+    ports:
+      - '5000:4000'
+    volumes:
+      - 'D:\LearnNodejs\Nodejs-typescript\uploads:/app/uploads'
