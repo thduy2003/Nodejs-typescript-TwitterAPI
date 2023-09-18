@@ -10,7 +10,7 @@ if (!env) {
   process.exit(1)
 }
 console.log(`Phats hiện NODE_ENV = ${env} vì thế app sẽ dùng file môi trường là ${envFilename}`)
-if (!fs.existsSync(path.resolve(envFilename))) {
+if (!fs.existsSync(path.resolve(envFilename.trim()))) {
   console.log(`Khoong tìm thấy file môi trường ${envFilename}`)
   console.log(
     `Lưu ý: App không dùng file .env, ví dụ môi trường là development thì app sẽ dùng   file .env.development`
@@ -20,7 +20,7 @@ if (!fs.existsSync(path.resolve(envFilename))) {
 }
 export const isProduction = env === 'production'
 config({
-  path: envFilename
+  path: envFilename.trim()
 })
 export const envConfig = {
   port: (process.env.PORT as string) || 4000,
