@@ -6,10 +6,29 @@ components:
       properties:
         email:
           type: string
-          example: duytrieudong@gmail.com
+          example: duyaccphu2003+8@gmail.com
         password:
           type: string
-          example: Duy2308!
+          example: Duy2308@@
+    RegisterBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: duyaccphu2003+8@gmail.com
+        password:
+          type: string
+          example: Duy2308@@
+        confirm_password:
+          type: string
+          example: Duy2308@@
+        name:
+          type: string
+          example: duy
+        date_of_birth:
+          type: string
+          format: ISO8601
+          example: 2003-08-23T08:26:33.781Z
     SucessAuthentication:
       type: object
       properties:
@@ -19,64 +38,281 @@ components:
         refresh_token:
           type: string
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRlYzVmM2JhZjVmZGFmNDQ1ZWY0N2ZhIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE2OTM1NDA1OTMsImV4cCI6MTcwMjE4MDU5M30.ak1Tc-JJKvYTeNWmTVX0_vilYnN9NvFHzjrBKNXm55A
-    User: 
+    User:
       type: object
       properties:
         _id:
           type: string
           format: MongoId
-          example: "64ec5f3baf5fdaf445ef47fa"
+          example: '64ec5f3baf5fdaf445ef47fa'
         name:
           type: string
-          example: "duy"
+          example: 'duy'
         email:
           type: string
-          example: "duyaccphu2003+1@gmail.com"
+          example: 'duyaccphu2003+1@gmail.com'
         date_of_birth:
           type: string
           format: ISO8601
-          example: "2003-08-23T08:26:33.781Z"
+          example: '2003-08-23T08:26:33.781Z'
         created_at:
           type: string
           format: ISO8601
-          example: "2023-08-28T08:47:55.841Z"
+          example: '2023-08-28T08:47:55.841Z'
         updated_at:
           type: string
           format: ISO8601
-          example: "2023-08-28T09:26:31.033Z"
+          example: '2023-08-28T09:26:31.033Z'
         verify:
-          $ref: "#/components/schemas/UserVerifyStatus"
+          $ref: '#/components/schemas/UserVerifyStatus'
         twitter_circle:
           type: array
           items:
             type: string
             format: MongoId
-            example: ['64ec5f3baf5fdaf445ef47fa','64ec5f3baf5fdaf445ef47fa']
+          example: ['64ec5f3baf5fdaf445ef47fa', '64ec5f3baf5fdaf445ef47fa']
         bio:
           type: string
-          example: "This is My bio"
+          example: 'This is My bio'
         location:
           type: string
-          example: "San Fracisco, SA"
+          example: 'San Fracisco, SA'
         website:
           type: string
-          example: "www.example.com"
+          example: 'www.example.com'
         username:
           type: string
-          example: "useraa013e26836344318c926d8c697ba6a7"
+          example: 'useraa013e26836344318c926d8c697ba6a7'
         avatar:
           type: string
-          example: "http://localhost:4000/images/avatars/avt.jpg"
+          example: 'http://localhost:4000/images/avatars/avt.jpg'
         cover_photo:
           type: string
-          example: "http://localhost:4000/images/avatars/avt.jpg"
-    UserVerifyStatus: 
-        type: number 
-        enum: [UnVerified, Verified,Banned]
-        example: 1
+          example: 'http://localhost:4000/images/avatars/avt.jpg'
+    UpdateUser:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'duy'
+        date_of_birth:
+          type: string
+          format: ISO8601
+          example: '2003-08-23T08:26:33.781Z'
+        bio:
+          type: string
+          example: 'This is My bio'
+        username:
+          type: string
+          example: 'useraa013e26836344318c926d8c697ba6a7'
+        cover_photo:
+          type: string
+          example: 'http://localhost:4000/images/avatars/avt.jpg'
+        website:
+          type: string
+          example: 'www.example.com'
+        location:
+          type: string
+          example: 'San Fracisco, SA'
+    UserVerifyStatus:
+      type: number
+      enum: [UnVerified, Verified, Banned]
+      example: 1
+    TweetType:
+      type: number
+      enum: [Tweet, Retweet, Comment, QuoteTweet]
+      example: 0
+    TweetAudience:
+      type: number
+      enum: [Everyone, TwitterCircle]
+      example: 0
+
+    MediaType:
+      type: number
+      enum: [Image, Video, HLS]
+      example: 0
+    MediaResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          url: string
+          type:
+            $ref: '#/components/schemas/MediaType'
+      example: [{ url: https://images.com, type: 0 }]
+    Tweet:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: MongoId
+          example: '64e96de4a28a82f65e80d70c'
+        user_id:
+          type: string
+          format: MongoId
+          example: '64e96de1a28a82f65e80d5e0'
+        type:
+          $ref: '#/components/schemas/TweetType'
+        audience:
+          $ref: '#/components/schemas/TweetAudience'
+        content:
+          type: string
+          example: 'Unde odio dolore libero. Numquam expedita libero maxime animi...'
+        parent_id:
+          type: ['null', 'string']
+          example: null
+        hashtags:
+          type: array
+          items:
+            type: string
+            format: MongoId
+          example: ['64ec5f3baf5fdaf445ef47fa', '64ec5f3baf5fdaf445ef47fa']
+        medias:
+          $ref: '#/components/schemas/MediaResponse'
+        guest_views:
+          type: integer
+          example: 0
+        user_views:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: ISO8601
+          example: '2023-08-26T03:13:40.900Z'
+        updated_at:
+          type: string
+          format: ISO8601
+          example: '2023-08-26T03:13:40.900Z'
+        results:
+          type: array
+          items: {}
+          example: []
+        mentions:
+          type: array
+          items:
+            type: string
+            format: MongoId
+          example: ['64ec5f3baf5fdaf445ef47fa', '64ec5f3baf5fdaf445ef47fa']
+    TweetBody:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/TweetType'
+        audience:
+          $ref: '#/components/schemas/TweetAudience'
+        content:
+          type: string
+          example: Đây là một bài viết Tweet
+        parent_id:
+          oneOf:
+            - type: 'null' # Note the quotes around 'null'
+            - type: string
+              format: MongoId
+          example:
+        hashtags:
+          type: array
+          items:
+            type: string
+            format: MongoId
+          example: ['64e569665e4455d4b60bd6fb', '64e569665e4455d4b60bd6fa']
+        mentions:
+          type: array
+          items:
+            type: string
+            format: MongoId
+          example: ['64cbc2bb0f1c2f8c7411f75b', '64cc6022584c18e1a0aa5c00']
+        medias:
+          $ref: '#/components/schemas/MediaResponse'
+    TweetResponse:
+      type: object
+      properties:
+        tweets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tweet'
+        limit:
+          type: integer
+          example: 10
+        page:
+          type: integer
+          example: 1
+        total_pages:
+          type: integer
+          example: 2
+    Bookmark:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: MongoId
+          example: 65194421667ed21c360f0a70
+        tweet_id:
+          type: string
+          format: MongoId
+          example: 64e554bcb4031c93fe02febe
+        user_id:
+          type: string
+          format: MongoId
+          example: 65183d5f0d81149a33991d81
+        created_at:
+          type: string
+          format: ISO8601
+          example: '2023-08-26T03:13:40.900Z'
+    PeopleFollow:
+      type: number
+      enum: [Anyone, Following]
+      example: 0
+    MediaTypeQuery:
+      type: string
+      enum:
+        - image
+        - video
+      example: image
+    Conversation:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: MongoId
+          example: 65194421667ed21c360f0a70
+        receiver_id:
+          type: string
+          format: MongoId
+          example: 64e554bcb4031c93fe02febe
+        sender_id:
+          type: string
+          format: MongoId
+          example: 65183d5f0d81149a33991d81
+        content:
+          type: string
+          example: đây là tin nhắn
+        created_at:
+          type: string
+          format: ISO8601
+          example: '2023-08-26T03:13:40.900Z'
+        updated_at:
+          type: string
+          format: ISO8601
+          example: '2023-08-26T03:13:40.900Z'
+    ConversationResponse:
+      type: object
+      properties:
+        conversations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversation'
+        limit:
+          type: integer
+          example: 10
+        page:
+          type: integer
+          example: 1
+        total_pages:
+          type: integer
+          example: 2
   # khai báo đại diện cho kiểu Authorization: Bearer <access_token>
   securitySchemes:
-    BearerAuth: 
+    BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT

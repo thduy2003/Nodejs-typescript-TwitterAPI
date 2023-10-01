@@ -27,6 +27,14 @@ servers:
 tags:
   - name: users
     description: Các API liên quan đến users
+  - name: tweets
+    description: Các API liên quan đến tweets
+  - name: medias
+    description: Các API liên quan đến medias
+  - name: bookmarks
+    description: Các API liên quan đến bookmarks
+  - name: conversations
+    description: Các API liên quan đến conversations
 paths:
   /users/login:
     post:
@@ -44,11 +52,11 @@ paths:
             # kiểu dữ liệu mà chúng ta muốn gửi lên
             schema:
               # tham chiếu đến LoginBody, nó báo đỏ kệ nó nha miễn là mình có đưa path của component.yaml vô apis options là được hết
-              $ref: "#/components/schemas/LoginBody"
+              $ref: '#/components/schemas/LoginBody'
         # bắt buộc phải gửi content lên
         required: true
       responses:
-        "200":
+        '200':
           description: Đăng nhập thành công
           # khai báo response trả về
           content:
@@ -60,10 +68,311 @@ paths:
                     type: string
                     example: Login success
                   result:
-                    $ref: "#/components/schemas/SucessAuthentication"
+                    $ref: '#/components/schemas/SucessAuthentication'
         # khai báo lỗi trả về
-        "422":
+        '422':
           description: Invalid input
+  /users/register:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - users
+      summary: Đăng ký
+      description: Đăng ký vào hệ thống
+      operationId: register
+      requestBody:
+        description: Thông tin đăng ký
+        content:
+          # chỉ cho phép gửi lên dưới dạng json
+          application/json:
+            # kiểu dữ liệu mà chúng ta muốn gửi lên
+            schema:
+              # tham chiếu đến LoginBody, nó báo đỏ kệ nó nha miễn là mình có đưa path của component.yaml vô apis options là được hết
+              $ref: '#/components/schemas/RegisterBody'
+        # bắt buộc phải gửi content lên
+        required: true
+      responses:
+        '200':
+          description: Đăng ký thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Register success
+                  result:
+                    $ref: '#/components/schemas/SucessAuthentication'
+        # khai báo lỗi trả về
+        '422':
+          description: Invalid input | Email already exists
+  /users/logout:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - users
+      summary: Thoát tài khoản
+      description: Thoát tài khoản
+      operationId: logout
+      requestBody:
+        description: gửi refresh_token
+        content:
+          # chỉ cho phép gửi lên dưới dạng json
+          application/json:
+            # kiểu dữ liệu mà chúng ta muốn gửi lên
+            schema:
+              # tham chiếu đến LoginBody, nó báo đỏ kệ nó nha miễn là mình có đưa path của component.yaml vô apis options là được hết
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRlYzVmM2JhZjVmZGFmNDQ1ZWY0N2ZhIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE2OTQ5NTIzNTksImV4cCI6MTcwMzU5MjM1OX0.90UGCBfbDNFeTN3zLk3ti8oS_d9mg3k2dvPN7ai0Eoo
+
+        # bắt buộc phải gửi content lên
+        required: true
+      # thêm như này để nhận Authorization khi đăng nhập
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Thoát tài khoản thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logout success
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+  /users/refresh-token:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - users
+      summary: Refresh token
+      description: Refresh token
+      operationId: refresh-token
+      requestBody:
+        description: gửi refresh_token
+        content:
+          # chỉ cho phép gửi lên dưới dạng json
+          application/json:
+            # kiểu dữ liệu mà chúng ta muốn gửi lên
+            schema:
+              # tham chiếu đến LoginBody, nó báo đỏ kệ nó nha miễn là mình có đưa path của component.yaml vô apis options là được hết
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRlYzVmM2JhZjVmZGFmNDQ1ZWY0N2ZhIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjoxLCJpYXQiOjE2OTQ5NTIzNTksImV4cCI6MTcwMzU5MjM1OX0.90UGCBfbDNFeTN3zLk3ti8oS_d9mg3k2dvPN7ai0Eoo
+
+        # bắt buộc phải gửi content lên
+        required: true
+      responses:
+        '200':
+          description: refresh token thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: refresh token success
+                  result:
+                    $ref: '#/components/schemas/SucessAuthentication'
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+  /users/verify-email:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - users
+      summary: Verify email
+      description: Verify email
+      operationId: verify-email
+      requestBody:
+        description: gửi email_verify_token
+        content:
+          # chỉ cho phép gửi lên dưới dạng json
+          application/json:
+            # kiểu dữ liệu mà chúng ta muốn gửi lên
+            schema:
+              # tham chiếu đến LoginBody, nó báo đỏ kệ nó nha miễn là mình có đưa path của component.yaml vô apis options là được hết
+              type: object
+              properties:
+                email_verify_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRlN2ZhOWM5ZDVjYmE5MzU4YTQ3NTk3IiwidG9rZW5fdHlwZSI6MywidmVyaWZ5IjowLCJpYXQiOjE2OTI5MjQ1NzIsImV4cCI6MTY5MzUyOTM3Mn0.DvpdW2sRheH1chk0KEPKz5PPCG7n2YKJPlSsYAldTPc
+
+        # bắt buộc phải gửi content lên
+        required: true
+      responses:
+        '200':
+          description: verify email thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Email verify success
+                  result:
+                    $ref: '#/components/schemas/SucessAuthentication'
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+  /users/resend-verify-email:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - users
+      summary: Gửi lại email verify
+      description: Gửi lại email verify
+      operationId: resend-verify-email
+      # thêm như này để nhận Authorization khi đăng nhập
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Gửi lại email verify thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Resend verify email success
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+  /users/forgot-password:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - users
+      summary: Quên mật khẩu
+      description: Quên mật khẩu
+      operationId: forgot-password
+      responses:
+        '200':
+          description: Quên mật khẩu
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Check email to reset password
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+  /users/verify-forgot-password:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - users
+      summary: verify forgot password
+      description: verify forgot password
+      operationId: verify-forgot-password
+      requestBody:
+        description: gửi forgot_password_token
+        content:
+          # chỉ cho phép gửi lên dưới dạng json
+          application/json:
+            # kiểu dữ liệu mà chúng ta muốn gửi lên
+            schema:
+              # tham chiếu đến LoginBody, nó báo đỏ kệ nó nha miễn là mình có đưa path của component.yaml vô apis options là được hết
+              type: object
+              properties:
+                forgot_password_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRjYzYwMjI1ODRjM
+
+        # bắt buộc phải gửi content lên
+        required: true
+      responses:
+        '200':
+          description: Xác thực quên mật khẩu thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Verify forgot password success
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+  /users/reset-password:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - users
+      summary: reset password
+      description: reset password
+      operationId: reset-password
+      requestBody:
+        description: gửi thông tin reset password
+        content:
+          # chỉ cho phép gửi lên dưới dạng json
+          application/json:
+            # kiểu dữ liệu mà chúng ta muốn gửi lên
+            schema:
+              # tham chiếu đến LoginBody, nó báo đỏ kệ nó nha miễn là mình có đưa path của component.yaml vô apis options là được hết
+              type: object
+              properties:
+                forgot_password_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjRjYzYwMjI1ODRjM
+                password:
+                  type: string
+                  example: Duy2308@@
+                confirm_password:
+                  type: string
+                  example: Duy2308@@
+
+        # bắt buộc phải gửi content lên
+        required: true
+      responses:
+        '200':
+          description: Reset password thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Reset password success
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
   /users/me:
     get:
       tags:
@@ -73,8 +382,8 @@ paths:
       description: Lấy thông tin user
       operationId: getMe
       # thêm như này để nhận Authorization khi đăng nhập
-      security: 
-       - BearerAuth: []
+      security:
+        - BearerAuth: []
       responses:
         default:
           description: Lấy thông tin user thành công
@@ -82,10 +391,748 @@ paths:
           content:
             application/json:
               schema:
-               type: object
-               properties:
-                 message: 
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: get my profile success
+                  result:
+                    $ref: '#/components/schemas/User'
+
+    patch:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - users
+      summary: Cập nhật thông tin profile
+      description: Cập nhật thông tin profile
+      operationId: me
+      requestBody:
+        description: Thông tin cập nhật
+        content:
+          # chỉ cho phép gửi lên dưới dạng json
+          application/json:
+            # kiểu dữ liệu mà chúng ta muốn gửi lên
+            schema:
+              # tham chiếu đến LoginBody, nó báo đỏ kệ nó nha miễn là mình có đưa path của component.yaml vô apis options là được hết
+              $ref: '#/components/schemas/UpdateUser'
+        # bắt buộc phải gửi content lên
+        required: false
+      # thêm như này để nhận Authorization khi đăng nhập
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Cập nhật thông tin thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Update my profile success
+                  result:
+                    $ref: '#/components/schemas/User'
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+        '422':
+          description: Invalid input
+  /users/{username}:
+    get:
+      tags:
+        - users
+      summary: Find user by username
+      description: Find user by username
+      operationId: getProfile
+      parameters:
+        - name: username
+          in: path
+          description: username of user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: get profile success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Get profile success
+                  result:
+                    $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+  /users/follow:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - users
+      summary: Theo dõi người dùng khác
+      description: Theo dõi người dùng khác
+      operationId: follow
+      requestBody:
+        description: gửi id user muốn theo dõi
+        content:
+          # chỉ cho phép gửi lên dưới dạng json
+          application/json:
+            # kiểu dữ liệu mà chúng ta muốn gửi lên
+            schema:
+              # tham chiếu đến LoginBody, nó báo đỏ kệ nó nha miễn là mình có đưa path của component.yaml vô apis options là được hết
+              type: object
+              properties:
+                followed_user_id:
                   type: string
-                  example: get my profile success 
-                 result: 
-                  $ref: '#/components/schemas/User'
+                  example: 64cc6022584c18e1a0aa5c00
+
+        # bắt buộc phải gửi content lên
+        required: true
+      # thêm như này để nhận Authorization khi đăng nhập
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Follow thành công | Đã Follow rồi
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Follow success | Followed
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+        '404':
+          description: Invalid followed user id
+  /users/follow/{user_id}:
+    delete:
+      tags:
+        - users
+      summary: Hủy theo dõi người khác
+      description: Hủy theo dõi người khác
+      operationId: unfollowUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          description: id of following user
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Hủy follow thành công | Đã hủy follow rồi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Already unfollowed | Unfollow success
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+        '404':
+          description: Invalid followed user id
+  /users/change-password:
+    put:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - users
+      summary: Thay đổi mật khẩu
+      description: Thay đổi mật khẩu
+      operationId: changePassword
+      requestBody:
+        description: gửi thông tin mật khẩu để thay đổi
+        content:
+          # chỉ cho phép gửi lên dưới dạng json
+          application/json:
+            # kiểu dữ liệu mà chúng ta muốn gửi lên
+            schema:
+              # tham chiếu đến LoginBody, nó báo đỏ kệ nó nha miễn là mình có đưa path của component.yaml vô apis options là được hết
+              type: object
+              properties:
+                old_password:
+                  type: string
+                  example: Duy123123@
+                password:
+                  type: string
+                  example: Duy123123@@
+                confirm_password:
+                  type: string
+                  example: Duy123123@@
+
+        # bắt buộc phải gửi content lên
+        required: true
+      # thêm như này để nhận Authorization khi đăng nhập
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Thay đổi mật khẩu thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Change password success
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+        '404':
+          description: Invalid followed user id
+  # ------------------API TWEET
+  /tweets:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - tweets
+      summary: Tạo tweet
+      description: Tạo tweet
+      operationId: createTweet
+      requestBody:
+        description: Thông tin tweet
+        content:
+          # chỉ cho phép gửi lên dưới dạng json
+          application/json:
+            # kiểu dữ liệu mà chúng ta muốn gửi lên
+            schema:
+              # tham chiếu đến LoginBody, nó báo đỏ kệ nó nha miễn là mình có đưa path của component.yaml vô apis options là được hết
+              $ref: '#/components/schemas/TweetBody'
+        # bắt buộc phải gửi content lên
+        required: true
+      # thêm như này để nhận Authorization khi đăng nhập
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Tạo tweet thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: create tweet successfully
+                  result:
+                    $ref: '#/components/schemas/Tweet'
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+        '422':
+          description: Invalid input
+    get:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - tweets
+      summary: Lấy newfeeds
+      description: Lấy newfeeds
+      operationId: getNewfeeds
+      # thêm như này để nhận Authorization khi đăng nhập
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: limit number of tweet lists
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: true
+          description: page of tweet lists
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: get new feeds successfully
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: get new feeds successfullyget new feeds successfully
+                  result:
+                    $ref: '#/components/schemas/TweetResponse'
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+        '422':
+          description: Invalid input
+  /tweets/{tweet_id}:
+    get:
+      tags:
+        - tweets
+      summary: Lấy chi tiết tweet
+      description: Lấy chi tiết tweet
+      operationId: getTweetDetail
+      security:
+        - BearerAuth: []
+
+      parameters:
+        - name: tweet_id
+          in: path
+          description: id of tweet
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lấy chi tiết tweet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: get detail tweet
+                  result:
+                    allOf:
+                      - $ref: '#/components/schemas/Tweet'
+                      - properties:
+                          bookmarks:
+                            type: integer
+                            example: 0
+                          likes:
+                            type: integer
+                            example: 0
+                          retweet_count:
+                            type: integer
+                            example: 0
+                          comment_count:
+                            type: integer
+                            example: 0
+                          quote_count:
+                            type: integer
+                            example: 0
+        '400':
+          description: invalid tweet id
+        '401':
+          description: Unauthorized
+        '403':
+          description: tweet is not public
+        '404':
+          description: tweet not found
+  /tweets/{tweet_id}/children:
+    get:
+      tags:
+        - tweets
+      summary: Lấy các con của tweet
+      description: Lấy các con của tweet
+      operationId: getChildrenTweet
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tweet_id
+          in: path
+          description: id of tweet
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: limit number of tweet lists
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: true
+          description: page of tweet lists
+          schema:
+            type: integer
+        - name: tweet_type
+          in: query
+          required: true
+          description: page of tweet lists
+          schema:
+            $ref: '#/components/schemas/TweetType'
+      responses:
+        '200':
+          description: get tweet children successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: get tweet children successfully
+                  result:
+                    allOf:
+                      - $ref: '#/components/schemas/TweetResponse'
+                      - properties:
+                          tweet_type:
+                            $ref: '#/components/schemas/TweetType'
+        '400':
+          description: invalid tweet id
+        '401':
+          description: Unauthorized
+        '403':
+          description: tweet is not public
+        '404':
+          description: tweet not found
+        '422':
+          description: invalid input
+  # ------------------API MEDIAS
+  /medias/upload-image:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - medias
+      summary: Upload ảnh
+      description: Upload ảnh
+      operationId: uploadImage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      # thêm như này để nhận Authorization khi đăng nhập
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Upload ảnh thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Upload succesfully
+                  result:
+                    $ref: '#/components/schemas/MediaResponse'
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+        '422':
+          description: file type is not valid
+  /medias/upload-video:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - medias
+      summary: Upload video
+      description: Upload video
+      operationId: uploadVideo
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                video:
+                  type: string
+                  format: binary
+      # thêm như này để nhận Authorization khi đăng nhập
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Upload video thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Upload succesfully
+                  result:
+                    $ref: '#/components/schemas/MediaResponse'
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+        '422':
+          description: file type is not valid
+  /medias/upload-video-hls:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - medias
+      summary: Upload video hls
+      description: Upload video hls
+      operationId: uploadVideoHLS
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                video:
+                  type: string
+                  format: binary
+      # thêm như này để nhận Authorization khi đăng nhập
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Upload video thành công
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Upload succesfully
+                  result:
+                    $ref: '#/components/schemas/MediaResponse'
+        # khai báo lỗi trả về
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+        '422':
+          description: file type is not valid
+  # ------------------API BOOKMARKS
+  /bookmarks:
+    post:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - bookmarks
+      summary: bookmark tweet
+      description: bookmark tweet
+      operationId: bookmarkTweet
+      requestBody:
+        description: gửi tweet id muốn bookmark
+        content:
+          # chỉ cho phép gửi lên dưới dạng json
+          application/json:
+            # kiểu dữ liệu mà chúng ta muốn gửi lên
+            schema:
+              # tham chiếu đến LoginBody, nó báo đỏ kệ nó nha miễn là mình có đưa path của component.yaml vô apis options là được hết
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                  format: MongoId
+                  example: 64e554bcb4031c93fe02febe
+      # thêm như này để nhận Authorization khi đăng nhập
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Bookmark tweet succesfully
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: bookmark tweet successfully
+                  result:
+                    $ref: '#/components/schemas/Bookmark'
+        # khai báo lỗi trả về
+        '400':
+          description: invalid tweet id
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+  /bookmarks/tweets/{tweet_id}:
+    delete:
+      tags:
+        # phải trùng tên với tags ở trên mới đưa vào folder được nha
+        - bookmarks
+      summary: unbookmark tweet
+      description: unbookmark tweet
+      operationId: unbookmarkTweet
+      parameters:
+        - name: tweet_id
+          in: path
+          description: id of tweet
+          required: true
+          schema:
+            type: string
+      # thêm như này để nhận Authorization khi đăng nhập
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: unbookmark tweet successfully
+          # khai báo response trả về
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: unbookmark tweet successfully
+        # khai báo lỗi trả về
+        '400':
+          description: invalid tweet id
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+  # ------------------API SEARCH
+  /search:
+    get:
+      tags:
+        - search
+      summary: search tweet
+      description: search tweet
+      operationId: searchTweets
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: limit number of tweet lists
+
+          schema:
+            type: integer
+        - name: page
+          in: query
+
+          description: page of tweet lists
+          schema:
+            type: integer
+        - name: people_follow
+          in: query
+
+          description: who can see tweet
+          schema:
+            $ref: '#/components/schemas/PeopleFollow'
+        - name: media_type
+          in: query
+
+          description: media type
+          schema:
+            $ref: '#/components/schemas/MediaTypeQuery'
+        - name: content
+          in: query
+          required: true
+          description: content search
+          schema:
+            type: string
+        - name: user_id
+          in: query
+
+          description: user id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: get tweet children successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: search successful
+                  result:
+                    allOf:
+                      - $ref: '#/components/schemas/TweetResponse'
+
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+        '422':
+          description: invalid input
+  # ------------------API CONVERSATIONS
+  /conversations/receivers/{receiver_id}:
+    get:
+      tags:
+        - conversations
+      summary: get conversations
+      description: get conversations
+      operationId: getConversations
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: limit number of tweet lists
+
+          schema:
+            type: integer
+        - name: page
+          in: query
+
+          description: page of tweet lists
+          schema:
+            type: integer
+        - name: receiver_id
+          in: path
+          description: id of receiver
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: get conversations successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: get conversations successfully
+                  result:
+                    allOf:
+                      - $ref: '#/components/schemas/ConversationResponse'
+
+        '401':
+          description: Unauthorized
+        '403':
+          description: User not found
+        '404':
+          description: User not found
+        '422':
+          description: invalid input
